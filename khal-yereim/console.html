@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Automation Console</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Console-specific styles */
+        body { background-color: #f4f6f9; }
+        .console-container { max-width: 1200px; }
+        #log-output {
+            background-color: #2c3e50; /* Dark blue */
+            color: #ecf0f1; /* Light grey */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            padding: 1rem;
+            border-radius: 8px;
+            height: 60vh;
+            overflow-y: scroll;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .log-line { padding: 0.2rem 0; border-bottom: 1px solid #34495e; }
+        .log-error { color: #e74c3c; /* Red */ font-weight: bold; }
+        .log-info { color: #2ecc71; /* Green */ }
+        .log-time { color: #95a5a6; /* Grey */ margin-right: 1rem; }
+        .console-actions { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="container console-container" id="admin-container">
+        <!-- Login View -->
+        <div id="login-view">
+            <header class="site-header"><h1>Admin Console Login</h1></header>
+            <form id="login-form" class="admin-form">
+                <div class="form-group"><label for="email">Email</label><input type="email" id="email" required value="shalomkarr@gmail.com"></div>
+                <div class="form-group"><label for="password">Password</label><input type="password" id="password" required></div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+
+        <!-- Console View (hidden by default) -->
+        <div id="console-view" class="hidden">
+            <header class="site-header"><h1>Automation Log Console</h1><a href="index.html" class="back-link">← Back to Home</a></header>
+            <div class="console-actions">
+                <button id="refresh-btn" class="btn btn-primary">Refresh Logs</button>
+                <button id="clear-btn" class="btn btn-secondary">Clear All Logs</button>
+            </div>
+            <pre id="log-output"><p>Loading logs...</p></pre>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase-client.js';
+
+        const loginView = document.getElementById('login-view');
+        const consoleView = document.getElementById('console-view');
+        const loginForm = document.getElementById('login-form');
+        const logOutput = document.getElementById('log-output');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const clearBtn = document.getElementById('clear-btn');
+
+        // --- AUTHENTICATION ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { error } = await supabase.auth.signInWithPassword({
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+            });
+            if (error) alert(error.message);
+            else checkSession();
+        });
+
+        // --- LOGIC ---
+        async function fetchLogs() {
+            logOutput.textContent = 'Loading logs...';
+            const { data, error } = await supabase
+                .from('script_logs')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(200); // Get the latest 200 logs
+
+            if (error) {
+                logOutput.textContent = `Error fetching logs: ${error.message}`;
+                return;
+            }
+
+            if (data.length === 0) {
+                logOutput.textContent = 'No logs found.';
+                return;
+            }
+
+            logOutput.innerHTML = data.map(log => {
+                const timestamp = new Date(log.created_at).toLocaleString();
+                const levelClass = log.log_level === 'ERROR' ? 'log-error' : 'log-info';
+                return `<div class="log-line"><span class="log-time">[${timestamp}]</span><span class="${levelClass}">${log.message}</span></div>`;
+            }).join('');
+        }
+
+        async function clearLogs() {
+            if (!confirm('Are you sure you want to delete ALL logs permanently?')) return;
+            logOutput.textContent = 'Clearing logs...';
+            const { error } = await supabase.from('script_logs').delete().neq('id', 0); // delete all rows
+            if (error) {
+                alert(`Error clearing logs: ${error.message}`);
+            }
+            await fetchLogs();
+        }
+
+        refreshBtn.addEventListener('click', fetchLogs);
+        clearBtn.addEventListener('click', clearLogs);
+
+        async function checkSession() {
+            const { data } = await supabase.auth.getSession();
+            if (data.session) {
+                loginView.classList.add('hidden');
+                consoleView.classList.remove('hidden');
+                fetchLogs(); // Load logs automatically on successful login
+            } else {
+                loginView.classList.remove('hidden');
+                consoleView.classList.add('hidden');
+            }
+        }
+        checkSession();
+    </script>
+</body>
+</html>

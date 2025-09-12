@@ -1,0 +1,10 @@
+# Clean URL rewrites for main pages
+/login      /login.html     200
+/signup     /signup.html    200
+/messages   /messages.html  200
+/admin      /admin.html     200
+/terms      /terms.html     200
+/privacy    /privacy.html   200
+
+# SPA fallback for dynamic item pages
+/*          /index.html     200

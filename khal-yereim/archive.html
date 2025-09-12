@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khal Yereim - Schedule Archive</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" class="site-title">Khal Yereim</a>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="mikvah.html" target="_blank">Mikvah</a></li>
+                <li><a href="currentschedule.html">Schedule</a></li>
+                <li><a href="#donate">Donate</a></li>
+                <li><a href="archive.html">Archive</a></li>
+                <li><a href="admin.html">Admin</a></li>                
+            </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container content-below-header">
+        <header class="site-header">
+            <h1>Schedule Archive</h1>
+        </header>
+
+        <main>
+            <section class="schedule-section">
+                <h2>Downloadable PDF Schedules</h2>
+                <div id="schedule-list">
+                    <p class="loading">Loading schedules...</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <p>© 2025 Khal Yereim. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase-client.js';
+        const scheduleListDiv = document.getElementById('schedule-list');
+        const DRIVE_PREVIEW_BASE_URL = 'https://drive.google.com/file/d/';
+        const DRIVE_DOWNLOAD_BASE_URL = 'https://drive.google.com/uc?export=download&id=';
+
+        async function loadArchive() {
+            try {
+                // Fetch schedules, ordering by date descending
+                // IMPORTANT: Ensure these column names EXACTLY match your Supabase table schema
+                const { data, error } = await supabase
+                    .from('schedule_data')
+                    .select('display_name, file_path, parsha_en, year_hebrew, sortable_date, doc_id')
+                    .order('sortable_date', { ascending: false })
+                    .limit(100); // Limit to a reasonable number of recent schedules
+
+                if (error) {
+                    console.error("Supabase error fetching schedules:", error);
+                    // Check for specific errors related to missing columns
+                    const missingColumns = [];
+                    if (error.message.includes('display_name') && error.message.includes('does not exist')) missingColumns.push("'display_name'");
+                    if (error.message.includes('file_path') && error.message.includes('does not exist')) missingColumns.push("'file_path'");
+                    if (error.message.includes('parsha_en') && error.message.includes('does not exist')) missingColumns.push("'parsha_en'");
+                    if (error.message.includes('year_hebrew') && error.message.includes('does not exist')) missingColumns.push("'year_hebrew'");
+                    if (error.message.includes('sortable_date') && error.message.includes('does not exist')) missingColumns.push("'sortable_date'");
+                    if (error.message.includes('doc_id') && error.message.includes('does not exist')) missingColumns.push("'doc_id'");
+
+                    if (missingColumns.length > 0) {
+                        throw new Error(`Database schema mismatch: Columns ${missingColumns.join(', ')} not found. Please check your Supabase table and adjust the SELECT statement if names differ.`);
+                    } else {
+                        throw error;
+                    }
+                }
+
+                if (!data || data.length === 0) {
+                    scheduleListDiv.innerHTML = '<p class="no-data">No schedules found in the archive.</p>';
+                    return;
+                }
+
+                // Clear loading message
+                scheduleListDiv.innerHTML = '';
+
+                // Group by year for better organization
+                const schedulesByYear = data.reduce((acc, schedule) => {
+                    const year = schedule.year_hebrew || 'Unknown Year';
+                    if (!acc[year]) {
+                        acc[year] = [];
+                    }
+                    acc[year].push(schedule);
+                    return acc;
+                }, {});
+
+                // Sort years in descending order (newest year first)
+                const sortedYears = Object.keys(schedulesByYear).sort((a, b) => {
+                    // Simple numeric sort if years are numbers, otherwise string sort.
+                    // For robust year sorting, ensure 'year_hebrew' is stored as a number or parse it.
+                    const yearA = parseInt(a.replace(/\D/g, '')) || 0;
+                    const yearB = parseInt(b.replace(/\D/g, '')) || 0;
+                    return yearB - yearA;
+                });
+
+                sortedYears.forEach(year => {
+                    const yearHeader = document.createElement('h3');
+                    yearHeader.className = 'year-header';
+                    yearHeader.textContent = `Hebrew Year ${year}`;
+                    scheduleListDiv.appendChild(yearHeader);
+
+                    schedulesByYear[year].forEach(schedule => {
+                        const scheduleItem = document.createElement('div');
+                        scheduleItem.className = 'schedule-item';
+
+                        let pdfUrl = schedule.file_path;
+                        // Transform Google Drive download URL to embeddable preview URL
+                        if (pdfUrl && pdfUrl.includes("drive.google.com/uc?export=download")) {
+                            const match = pdfUrl.match(/id=([^&]+)/);
+                            if (match && match[1]) {
+                                const fileId = match[1];
+                                pdfUrl = `${DRIVE_PREVIEW_BASE_URL}${fileId}/preview`;
+                            }
+                        }
+                        const viewerUrl = `view.html?pdf=${encodeURIComponent(pdfUrl)}`;
+                        const downloadFileName = `${schedule.display_name ? schedule.display_name.replace(/[^a-z0-9]/gi, '_') : 'schedule'}.pdf`;
+
+                        scheduleItem.innerHTML = `
+                            <p><strong>${schedule.display_name || schedule.parsha_en || 'Unnamed Schedule'}</strong> (${schedule.year_hebrew || 'N/A'})</p>
+                            <div class="document-actions">
+                                <a href="${viewerUrl}" class="btn btn-primary btn-small" target="_blank" rel="noopener noreferrer">View</a>
+                                <a href="${schedule.file_path}" class="btn btn-secondary btn-small" download="${downloadFileName}">Download</a>
+                            </div>
+                        `;
+                        scheduleListDiv.appendChild(scheduleItem);
+                    });
+                });
+
+            } catch (e) {
+                console.error("Error loading archive:", e.message);
+                scheduleListDiv.innerHTML = `<p class="error">Failed to load schedules: ${e.message}</p>`;
+            }
+        }
+
+        loadArchive();
+    </script>
+    <script> // Nav toggle script
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav ul');
+        navToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

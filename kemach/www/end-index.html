@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Last page</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="picker-app">
+    <h1>Finished order #USER for ULAST</h1>
+    <div class="warn">WARNN</div>
+    <form action="/">
+      <input type="text" id="lastUser" name="lastUser" hidden value="USER">
+      <label for="comment">Comments</label>
+      <textarea type="text" id="comment" name="comment">CMT</textarea>
+      <label for="picker">Picked by</label>
+      <input type="text" value="NEXT_LIST" disabled>
+      <input type="hidden" id="picker" name="picker">
+      <button type="submit">Submit and Complete order #USER</button>
+      <label for="print" id="print-check"><input id="print" name="print" checked type="checkbox">Print order on submit</label>
+    </form>
+    <a href="javascript:history.go(-1)">Back</a>
+    <div>
+      <p>Items Picked</p>
+      DONE_LIST
+    </div>
+  </div>
+  <script src="index.js"></script>
+  <script>
+    if (document.querySelector('.discrepancy')) {
+      alert('Not all items received, please double check that this is correct before completing order')
+    }
+    document.getElementById('picker').value = 'NEXT_LIST'?.split('# ')?.at(-1)?.slice(0, -1)
+    window.history.forward() // Prevents user from going back to this page
+    window.addEventListener('unload', function() {
+      window.history.replaceState(null, '', '/no-back.html')
+    })
+  </script>
+</body>
+</html>

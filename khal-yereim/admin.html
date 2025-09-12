@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Khal Yereim</title>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        /* --- Main Navigation Bar Styles (from style.css) --- */
+        .main-header {
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+            padding: 0 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 70px;
+        }
+        .site-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-text-light);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .nav-logo {
+            height: 40px;
+            width: auto;
+            border-radius: 4px;
+        }
+        .main-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.5rem;
+        }
+        .main-nav a {
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-weight: 700;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: color 0.2s ease-in-out;
+        }
+        .main-nav a:hover {
+            color: var(--color-gold);
+        }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0; width: 30px; height: 22px; position: relative; }
+        .hamburger, .hamburger::before, .hamburger::after { content: ''; position: absolute; width: 30px; height: 3px; background-color: var(--color-text-light); border-radius: 3px; transition: transform 0.3s ease-in-out; }
+        .hamburger::before { top: -10px; }
+        .hamburger::after { top: 10px; }
+
+        @media (max-width: 768px) {
+            .nav-toggle { display: block; }
+            .main-nav ul { display: none; position: absolute; top: 70px; left: 0; width: 100%; background-color: var(--color-primary); flex-direction: column; align-items: center; padding: 2rem 0; gap: 1rem; }
+            .main-nav ul.active { display: flex; }
+            .main-nav li { width: 100%; text-align: center; }
+        }
+
+        /* Adjust content to not be hidden by fixed header */
+        .content-below-header {
+            padding-top: 70px;
+        }
+
+        /* Visibility control for main containers */
+        #login-view.hidden,
+        #admin-dashboard.hidden {
+            display: none;
+        }
+        #admin-dashboard {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" class="site-title">
+                <img src="shul.png" alt="Khal Yereim Logo" class="nav-logo">
+                <span>Khal Yereim</span>
+            </a>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="mikvah.html" target="_blank">Mikvah</a></li>
+                    <li><a href="currentschedule.html">Schedule</a></li>
+                    <li><a href="index.html#donate">Donate</a></li>
+                    <li><a href="archive.html">Archive</a></li>
+                    <li><a href="admin.html">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Login View -->
+    <div id="login-view" class="content-below-header">
+        <div class="container login-container">
+            <header class="site-header"><h1>Admin Login</h1></header>
+            <form id="login-form" class="admin-form">
+                <div class="form-group">
+                    <label for="admin-email">Email</label>
+                    <input type="email" id="admin-email" required value="admin@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" required autocomplete="current-password">
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <p id="login-status-message" class="status-message hidden"></p>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="hidden content-below-header">
+        <div class="container">
+            <header class="site-header">
+                <h1>Admin Dashboard</h1>
+                <button id="logout-btn" class="btn btn-small logout-btn">Logout</button>
+            </header>
+
+            <section id="upload-current-schedule-section" class="admin-section">
+                <header class="section-header">
+                    <h2>Upload Current Schedule PDF</h2>
+                </header>
+                <form id="upload-current-schedule-form" class="admin-form">
+                    <div class="form-group">
+                        <label for="current-schedule-file">Select PDF File:</label>
+                        <input type="file" id="current-schedule-file" accept=".pdf" required>
+                        <small>Uploading a new file will replace the current live schedule.</small>
+                    </div>
+                    <button type="submit" id="upload-schedule-btn" class="btn btn-primary">Upload and Set as Current</button>
+                    <p id="upload-status-message" class="status-message hidden"></p>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        const SUPABASE_URL = 'https://qvoxpfigbukidlmshiei.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF2b3hwZmlnYnVraWRsbXNoaWVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyOTM2OTEsImV4cCI6MjA2NTg2OTY5MX0.CEbyeIw6QiMxbLBhU7x7Re7SL_unWJMyaJQPS9y-k60';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loginView = document.getElementById('login-view');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginForm = document.getElementById('login-form');
+        const adminEmailInput = document.getElementById('admin-email');
+        const adminPasswordInput = document.getElementById('admin-password');
+        const loginStatusMessage = document.getElementById('login-status-message');
+        const uploadScheduleBtn = document.getElementById('upload-schedule-btn');
+        const uploadCurrentScheduleForm = document.getElementById('upload-current-schedule-form');
+        const currentScheduleFileInput = document.getElementById('current-schedule-file');
+        const uploadStatusMessage = document.getElementById('upload-status-message');
+
+        const CURRENT_SCHEDULE_STORAGE_PATH = 'current_schedule_live/schedule.pdf'; 
+        const CURRENT_SCHEDULE_DB_CATEGORY = 'CURRENT_LIVE_PDF'; 
+
+        function setElementVisibility(element, visible) {
+            element?.classList.toggle('hidden', !visible);
+        }
+
+        function showStatus(message, type = 'info', element) {
+            if (!element) return;
+            element.textContent = message;
+            element.className = `status-message status-${type}`;
+        }
+
+        function clearFormStatus(element) {
+            if (element) {
+                element.textContent = '';
+                element.classList.add('hidden'); 
+            }
+        }
+        
+        async function handleLogin(email, password) {
+            showStatus("Logging in...", 'info', loginStatusMessage);
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                if (data.session) {
+                    showAdminDashboard();
+                }
+            } catch (error) {
+                showStatus(`Login failed: ${error.message.includes('invalid') ? 'Invalid email or password.' : error.message}`, 'error', loginStatusMessage);
+            }
+        }
+
+        function showAdminDashboard() {
+            setElementVisibility(loginView, false);
+            setElementVisibility(adminDashboard, true);
+            clearFormStatus(loginStatusMessage);
+            uploadCurrentScheduleForm?.reset();
+            clearFormStatus(uploadStatusMessage);
+        }
+
+        function hideAdminDashboard() {
+            setElementVisibility(adminDashboard, false);
+            setElementVisibility(loginView, true);
+        }
+
+        uploadCurrentScheduleForm?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const file = currentScheduleFileInput.files[0];
+            if (!file) {
+                showStatus("Please select a PDF file.", 'error', uploadStatusMessage);
+                return;
+            }
+
+            showStatus("Uploading...", 'info', uploadStatusMessage);
+            uploadScheduleBtn.disabled = true;
+
+            try {
+                await supabase.storage
+                    .from('public-documents')
+                    .upload(CURRENT_SCHEDULE_STORAGE_PATH, file, { upsert: true });
+
+                const { data: { publicUrl } } = supabase.storage
+                    .from('public-documents')
+                    .getPublicUrl(CURRENT_SCHEDULE_STORAGE_PATH);
+
+                const scheduleEntry = {
+                    category: CURRENT_SCHEDULE_DB_CATEGORY,
+                    display_name: `Current Live Schedule (${new Date().toLocaleDateString()})`,
+                    file_path: publicUrl,
+                    sortable_date: new Date().toISOString().split('T')[0],
+                    parsha_en: 'Live Schedule PDF',
+                };
+
+                const { error } = await supabase
+                    .from('schedule_data')
+                    .upsert(scheduleEntry, { onConflict: 'category' });
+
+                if (error) throw error;
+                showStatus(`Schedule uploaded successfully!`, 'success', uploadStatusMessage);
+                uploadCurrentScheduleForm.reset();
+            } catch (error) {
+                showStatus(`Error: ${error.message}`, 'error', uploadStatusMessage);
+            } finally {
+                uploadScheduleBtn.disabled = false;
+            }
+        });
+
+        loginForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            handleLogin(adminEmailInput.value, adminPasswordInput.value);
+        });
+
+        logoutBtn?.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            hideAdminDashboard();
+        });
+
+        supabase.auth.onAuthStateChange((_event, session) => {
+            if (session) {
+                showAdminDashboard();
+            } else {
+                hideAdminDashboard();
+            }
+        });
+    </script>
+    <script> 
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav ul');
+        navToggle?.addEventListener('click', () => {
+            mainNav?.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

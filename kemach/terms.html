@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions - Kemach Cleveland</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="static-page">
+    <header class="site-header">
+        <div class="header-top">
+            <nav class="main-nav">
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <header>
+            <h1>Terms & Conditions</h1>
+        </header>
+        <main class="content-container">
+            <p class="loading-text" id="contentStatus">Loading content...</p>
+            <div id="pageContent">
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+    <script type="module">
+        import { supabase } from './js/supabase-client.js';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const pageContentEl = document.getElementById('pageContent');
+            const contentStatusEl = document.getElementById('contentStatus');
+
+            try {
+                const { data, error } = await supabase
+                    .from('static_content')
+                    .select('content_html')
+                    .eq('page_name', 'terms')
+                    .single();
+
+                if (error && error.code !== 'PGRST116') throw error;
+                
+                if (data && data.content_html) {
+                    pageContentEl.innerHTML = data.content_html;
+                    contentStatusEl.style.display = 'none';
+                } else {
+                    contentStatusEl.textContent = "Content for this page is not yet available. Please check back later.";
+                }
+            } catch (err) {
+                console.error('Error fetching static content:', err);
+                contentStatusEl.textContent = 'Error loading content. Please try again later.';
+            }
+        });
+    </script>
+</body>
+</html>

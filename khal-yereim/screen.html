@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khal Yereim - E-Luach</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <!-- ** CORRECTED HEBCAL URL ** -->
+    <script src="https://www.hebcal.com/hebcal-2.3.3.js"></script>
+</head>
+<body class="screen-body">
+
+    <div class="screen-header">
+        <div id="screen-title-container">
+            <h1 id="screen-title">Loading...</h1>
+            <div id="screen-clock"></div>
+        </div>
+    </div>
+
+    <div class="screen-layout">
+        <!-- Left Column -->
+        <div class="main-column" id="weekday-column">
+            <div class="info-box">
+                <h2 id="today-title">Today</h2>
+                <div class="content-box" id="today-content">
+                    <p class="no-data">Loading...</p>
+                </div>
+            </div>
+            <div class="info-box">
+                <h2 id="tomorrow-title">Tomorrow</h2>
+                <div class="content-box" id="tomorrow-content">
+                    <p class="no-data">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Column -->
+        <div class="main-column" id="shabbos-column">
+            <div class="info-box">
+                <h2>Upcoming Shabbos</h2>
+                <div class="content-box" id="shabbos-content">
+                    <p class="no-data">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="main-column" id="zmanim-column">
+            <div class="info-box">
+                <h2>Daily Zmanim</h2>
+                <div class="content-box" id="zmanim-content">
+                    <p class="no-data">Loading Zmanim...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase-client.js';
+
+        const titleEl = document.getElementById('screen-title');
+        const clockEl = document.getElementById('screen-clock');
+        const todayTitle = document.getElementById('today-title');
+        const todayContent = document.getElementById('today-content');
+        const tomorrowTitle = document.getElementById('tomorrow-title');
+        const tomorrowContent = document.getElementById('tomorrow-content');
+        const shabbosContent = document.getElementById('shabbos-content');
+        const zmanimContent = document.getElementById('zmanim-content');
+
+        // --- ZMANIM USING HEBCAL/CORE LIBRARY ---
+        function calculateAndDisplayZmanim() {
+            try {
+                if (typeof Hebcal === 'undefined') {
+                    throw new Error("Hebcal library not ready.");
+                }
+                // Default location for Khal Yereim
+                const shulLocation = new Hebcal.Location(41.5037, -81.5408, false, 'America/New_York');
+                const today = new Date();
+
+                const zmanim = new Hebcal.Zmanim(shulLocation, today);
+                const times = zmanim.getZmanim();
+
+                const formatTime = (dateObj) => {
+                    if (!dateObj || !(dateObj instanceof Date)) return 'N/A';
+                    // Use 'en-US' locale for consistent formatting, specifying 12-hour clock
+                    return dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).replace(' ', '');
+                };
+
+                let zmanimHtml = '<ul>';
+                zmanimHtml += `
+                    <li><span>עלות השחר</span><span>${formatTime(times.alos)}</span></li>
+                    <li><span>נץ החמה</span><span>${formatTime(times.netz)}</span></li>
+                    <li><span>סוף זמן ק"ש (גר"א)</span><span>${formatTime(times.sofZmanShmaGRA)}</span></li>
+                    <li><span>סוף זמן תפילה (גר"א)</span><span>${formatTime(times.sofZmanTfillaGRA)}</span></li>
+                    <li><span>חצות</span><span>${formatTime(times.chatzos)}</span></li>
+                    <li><span>מנחה גדולה</span><span>${formatTime(times.minchaGedola)}</span></li>
+                    <li><span>שקיעה</span><span>${formatTime(times.shkiah)}</span></li>
+                    <li><span>צאת הכוכבים</span><span>${formatTime(times.tzais)}</span></li>
+                `;
+                zmanimHtml += '</ul>';
+
+                zmanimContent.innerHTML = zmanimHtml;
+            } catch (err) {
+                console.error("Failed to calculate Zmanim:", err);
+                zmanimContent.innerHTML = '<p class="no-data">Could not calculate Zmanim.</p>';
+            }
+        }
+
+        // Helper to find day data from the schedule array
+        const findDayData = (schedule, dayName) => {
+            if (!schedule || !dayName) return null;
+            // Case-insensitive matching
+            return schedule.find(d => d.day.toLowerCase() === dayName.toLowerCase());
+        };
+
+        const renderDay = (data) => {
+            if (!data || !data.times || data.times.length === 0) return '<p class="no-data">No schedule posted.</p>';
+
+            // Format the date if available, otherwise just show the title
+            let dateHeader = data.date ? `<h3 class="screen-date">${data.date}</h3>` : '';
+
+            // Map times to list items
+            let timesHtml = data.times.map(t => `<li><span>${t.name}</span><span>${t.time}</span></li>`).join('');
+
+            return `${dateHeader}<ul>${timesHtml}</ul>`;
+        };
+
+        async function updateScreen() {
+            try {
+                // Fetch the latest schedule from the schedule_data table
+                const { data, error } = await supabase
+                    .from('schedule_data')
+                    .select('*') // Select all columns
+                    .order('created_at', { ascending: false }) // Order by creation date, newest first
+                    .limit(1) // Get only the latest entry
+                    .single(); // Expect a single row
+
+                if (error) throw error;
+                if (!data) {
+                    // If no data is found, display a message in all content boxes
+                    const noDataMessage = '<p class="no-data">No schedule data available. Please check admin panel.</p>';
+                    titleEl.textContent = "No Schedule Data";
+                    todayContent.innerHTML = noDataMessage;
+                    tomorrowContent.innerHTML = noDataMessage;
+                    shabbosContent.innerHTML = noDataMessage;
+                    zmanimContent.innerHTML = '<p class="no-data">Cannot load zmanim without schedule context.</p>';
+                    return;
+                }
+
+                // Extract schedule details
+                // Use display_name for the title, fallback to parsha_en, or a default string
+                const title = data.display_name || data.parsha_en || 'Current Schedule';
+                titleEl.textContent = `${data.month_hebrew} - ${title}`;
+
+                // Calculate and display Zmanim
+                calculateAndDisplayZmanim();
+
+                // Get today's and tomorrow's names for displaying schedule data
+                const today = new Date();
+                const tomorrow = new Date(today.getTime() + 24 * 60 * 60 * 1000); // Add 24 hours
+
+                const todayName = today.toLocaleString('en-US', { weekday: 'long' });
+                const tomorrowName = tomorrow.toLocaleString('en-US', { weekday: 'long' });
+
+                todayTitle.textContent = `Today (${todayName})`;
+                tomorrowTitle.textContent = `Tomorrow (${tomorrowName})`;
+
+                // Find data for today, tomorrow, and Shabbos from the schedule_json
+                const scheduleJson = data.schedule_json?.schedule || []; // Safely access schedule array
+                const todayData = findDayData(scheduleJson, todayName);
+                const tomorrowData = findDayData(scheduleJson, tomorrowName);
+                // Find Shabbos data by checking for "Shabbos" or "Shabbat" (case-insensitive)
+                const shabbosData = findDayData(scheduleJson, 'Shabbos') || findDayData(scheduleJson, 'Shabbat');
+
+                // Render the data into the respective content boxes
+                todayContent.innerHTML = renderDay(todayData);
+                tomorrowContent.innerHTML = renderDay(tomorrowData);
+                shabbosContent.innerHTML = renderDay(shabbosData);
+
+            } catch (err) {
+                console.error("Failed to update screen:", err.message);
+                const errorHtml = `<p class="no-data">Error loading data: ${err.message}</p>`;
+                titleEl.textContent = "Error Loading Data";
+                todayContent.innerHTML = errorHtml;
+                tomorrowContent.innerHTML = errorHtml;
+                shabbosContent.innerHTML = errorHtml;
+                zmanimContent.innerHTML = '<p class="no-data">Error loading zmanim.</p>';
+            }
+        }
+
+        // Function to update the clock display
+        function updateClock() {
+            // Format time in 12-hour format with AM/PM
+            clockEl.textContent = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+
+        // Initial load and setup intervals
+        window.addEventListener('load', () => {
+            updateScreen(); // Initial fetch and display
+            updateClock();  // Initial clock update
+            setInterval(updateScreen, 300000); // Update schedule every 5 minutes (300,000 ms)
+            setInterval(updateClock, 1000);    // Update clock every second
+        });
+    </script>
+</body>
+</html>

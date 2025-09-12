@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mikvah | Khal Yereim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /*
+      These styles are specific to the admin overlay modal which is unique to this page.
+      General page styling is now handled by the main style.css file.
+    */
+    #admin-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85);
+      color: white;
+      display: none;
+      overflow-y: auto;
+      padding: 2rem;
+      box-sizing: border-box;
+      z-index: 9999;
+    }
+
+    #admin-overlay h2 {
+      margin-top: 0;
+      font-size: 2rem;
+      text-align: center;
+      font-family: var(--font-heading);
+      color: var(--color-gold);
+    }
+
+    .admin-table-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 2rem;
+      background: white;
+      color: var(--color-text);
+      font-size: 0.9rem;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid var(--color-border);
+      padding: 0.75rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--color-accent-light);
+      font-weight: bold;
+    }
+
+    #close-overlay {
+      background: var(--color-error);
+      color: var(--color-text-light);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      margin-top: 2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 200px;
+      font-weight: bold;
+    }
+    #close-overlay:hover {
+        background-color: #c82333;
+    }
+
+    /* --- STYLES FOR ADMIN ACTIONS --- */
+    .completed-row {
+        text-decoration: line-through;
+        color: #777;
+    }
+    .completed-row td {
+        background-color: #f1f1f1 !important;
+    }
+    .actions-cell button {
+        margin-right: 5px;
+        padding: 4px 8px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        min-width: 60px;
+    }
+    .actions-cell button:disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+    .edit-btn { background-color: #ffc107; border-color: #ffc107; }
+    .complete-btn { background-color: #28a745; border-color: #28a745; color: white; }
+    .save-btn { background-color: #007bff; border-color: #007bff; color: white; }
+    .cancel-btn { background-color: #6c757d; border-color: #6c757d; color: white; }
+    
+    td.actions-cell { 
+        text-align: right !important; 
+        white-space: nowrap; 
+        vertical-align: middle;
+    }
+    .inline-edit-input {
+        width: 95%;
+        padding: 4px;
+        box-sizing: border-box;
+        border: 1px solid #999;
+        border-radius: 3px;
+        font-family: inherit;
+        font-size: inherit;
+    }
+  </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" class="site-title">
+                <img src="shul.png" alt="Khal Yereim Logo" class="nav-logo">
+                <span id="site-title-nav">Khal Yereim</span>
+            </a>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="mikvah.html">Mikvah</a></li>
+                    <li><a href="currentschedule.html">Schedule</a></li>
+                <li><a href="/donate.html" target="_blank">Donate</a></li>
+                    <li><a href="archive.html">Archive</a></li>
+                    <li><a href="admin.html">Admin</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container content-below-header">
+        <header class="site-header">
+            <h1>Mikvah Card Activation</h1>
+        </header>
+
+        <main>
+            <section id="activation-form-section">
+                <p style="text-align: center; max-width: 600px; margin: 1rem auto 2rem auto;">Fill out the form below to request activation for your Mikvah access card. All fields are required.</p>
+                
+                <form id="mikvah-form" name="mikvah-manual-form" data-netlify="true" class="admin-form" style="max-width: 700px; margin: auto;">
+                    <input type="hidden" name="form-name" value="mikvah-manual-form" />
+                    
+                    <div class="form-group">
+                        <label for="full_name">Full Name:</label>
+                        <input type="text" id="full_name" name="full_name" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email_form">Email Address:</label>
+                        <input type="email" id="email_form" name="email" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required />
+                    </div>
+                  
+                    <div class="form-group">
+                        <label for="address">Home Address:</label>
+                        <textarea id="address" name="address" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="card_number">Card Number (4 digits):</label>
+                        <input type="text" id="card_number" name="card_number" pattern="\d{4}" maxlength="4" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="member_type">Membership Type:</label>
+                        <select id="member_type" name="member_type" required>
+                            <option value="">--Select Type--</option>
+                            <option value="Shul Member #1">Shul Member #1</option>
+                            <option value="Guest #2">Guest #2</option>
+                            <option value="Mikvah Member #4">Mikvah Member #4</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Optional Notes:</label>
+                        <textarea id="notes" name="notes" rows="3"></textarea>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Submit Request</button>
+                </form>
+            </section>
+
+            <hr>
+
+            <section id="admin-login-section" style="margin-top: 2rem;">
+                <h2 style="text-align:center;">Admin Login</h2>
+                <p style="text-align: center; max-width: 600px; margin: 1rem auto 2rem auto;">Admins can log in here to view recent card activation requests.</p>
+                <div class="admin-form" style="max-width: 500px; margin: auto;">
+                    <div class="form-group">
+                        <label for="login_email">Admin Email</label>
+                        <input type="email" id="login_email" placeholder="admin@example.com" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Admin Password</label>
+                        <input type="password" id="password" placeholder="Password" />
+                    </div>
+                    <button id="login-btn" class="btn btn-secondary" style="width: 100%;">Log In & View Requests</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+  <div id="admin-overlay">
+    <div class="admin-table-container">
+      <h2>Mikvah Card Requests</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Card #</th>
+            <th>Type</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-table-body"></tbody>
+      </table>
+      <button id="close-overlay">Close</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+        <p><a href="archive.html" class="admin-link">Schedule Archive</a> | <a href="admin.html" class="admin-link">Admin Login</a></p>
+        <p>© <span id="current-year">2025</span> Khal Yereim. All rights reserved.</p>
+  </footer>
+
+  <script type="module">
+    import { supabase } from './supabase-client.js';
+
+    // --- DOM Elements ---
+    const form = document.getElementById('mikvah-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const loginBtn = document.getElementById('login-btn');
+    const overlay = document.getElementById('admin-overlay');
+    const closeOverlay = document.getElementById('close-overlay');
+    const tableBody = document.getElementById('admin-table-body');
+    
+    // --- State Management ---
+    let requestsData = new Map(); // Store original data for cancellation
+
+    // --- Form Submission Logic ---
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); 
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      const formData = new FormData(form);
+      
+      const supabasePromise = supabase.from('mikvah_cards').insert([
+        { 
+          full_name: formData.get('full_name'), email: formData.get('email'), phone: formData.get('phone'),
+          address: formData.get('address'), card_number: formData.get('card_number'), member_type: formData.get('member_type'),
+          notes: formData.get('notes'), is_completed: false 
+        }
+      ]);
+      
+      const netlifyPromise = fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData).toString(),
+      });
+
+      try {
+        const [supabaseResult, netlifyResult] = await Promise.all([supabasePromise, netlifyPromise]);
+        if (supabaseResult.error) throw new Error(`Supabase Error: ${supabaseResult.error.message}`);
+        if (!netlifyResult.ok) throw new Error(`Netlify Error: Submission failed with status ${netlifyResult.status}`);
+
+        alert('Request submitted successfully!');
+        form.reset();
+      } catch (error) {
+        console.error("Submission Error:", error);
+        alert('An error occurred during submission: ' + error.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Request';
+      }
+    });
+
+    // --- Admin Login & Data Loading ---
+    loginBtn.addEventListener('click', async () => {
+      const email = document.getElementById('login_email').value;
+      const password = document.getElementById('password').value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      if (error) {
+        alert('Login failed: ' + error.message);
+        return;
+      }
+      loadAdminData();
+    });
+
+    async function loadAdminData() {
+      const { data, error } = await supabase.from('mikvah_cards')
+        .select('*')
+        .order('is_completed', { ascending: true }) 
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        alert('Error loading data: ' + error.message);
+        return;
+      }
+
+      requestsData.clear();
+      tableBody.innerHTML = ''; // Clear existing table
+      data.forEach(row => {
+        requestsData.set(row.id, row);
+        const rowElement = document.createElement('tr');
+        rowElement.dataset.id = row.id;
+
+        // *** FIX: Apply the 'completed-row' class here, where rowElement is defined. ***
+        if (row.is_completed) {
+            rowElement.classList.add('completed-row');
+        }
+
+        rowElement.innerHTML = renderRowView(row);
+        tableBody.appendChild(rowElement);
+      });
+
+      overlay.style.display = 'block';
+    }
+
+    // --- Event Delegation for Table Actions ---
+    tableBody.addEventListener('click', async (e) => {
+        const button = e.target.closest('button');
+        if (!button) return;
+
+        const rowElement = button.closest('tr');
+        const id = rowElement.dataset.id;
+
+        if (button.classList.contains('complete-btn')) {
+            await handleComplete(id, rowElement);
+        } else if (button.classList.contains('edit-btn')) {
+            handleEdit(rowElement);
+        } else if (button.classList.contains('save-btn')) {
+            await handleSave(id, rowElement);
+        } else if (button.classList.contains('cancel-btn')) {
+            handleCancel(id, rowElement);
+        }
+    });
+
+    // --- Action Handlers & Row Renderers ---
+    function renderRowView(row) {
+        const isCompleted = row.is_completed;
+        // *** FIX: The problematic logic that caused the error was removed from here. ***
+        return `
+            <td data-field="full_name">${row.full_name || ''}</td>
+            <td data-field="card_number">${row.card_number || ''}</td>
+            <td data-field="member_type">${row.member_type || ''}</td>
+            <td data-field="email">${row.email || ''}</td>
+            <td data-field="phone">${row.phone || ''}</td>
+            <td data-field="address">${row.address || ''}</td>
+            <td data-field="notes">${row.notes || ''}</td>
+            <td class="actions-cell">
+                <button class="edit-btn" ${isCompleted ? 'disabled' : ''}>Edit</button>
+                <button class="complete-btn" ${isCompleted ? 'disabled' : ''}>Complete</button>
+            </td>
+        `;
+    }
+
+    function renderRowEdit(row) {
+        return `
+            <td><input class="inline-edit-input" data-field="full_name" value="${row.full_name || ''}"></td>
+            <td><input class="inline-edit-input" data-field="card_number" value="${row.card_number || ''}" pattern="\\d{4}" maxlength="4"></td>
+            <td>
+                <select class="inline-edit-input" data-field="member_type">
+                    <option value="Shul Member #1" ${row.member_type === 'Shul Member #1' ? 'selected' : ''}>Shul Member #1</option>
+                    <option value="Guest #2" ${row.member_type === 'Guest #2' ? 'selected' : ''}>Guest #2</option>
+                    <option value="Mikvah Member #4" ${row.member_type === 'Mikvah Member #4' ? 'selected' : ''}>Mikvah Member #4</option>
+                </select>
+            </td>
+            <td><input type="email" class="inline-edit-input" data-field="email" value="${row.email || ''}"></td>
+            <td><input type="tel" class="inline-edit-input" data-field="phone" value="${row.phone || ''}"></td>
+            <td><textarea class="inline-edit-input" data-field="address">${row.address || ''}</textarea></td>
+            <td><textarea class="inline-edit-input" data-field="notes">${row.notes || ''}</textarea></td>
+            <td class="actions-cell">
+                <button class="save-btn">Save</button>
+                <button class="cancel-btn">Cancel</button>
+            </td>
+        `;
+    }
+
+    async function handleComplete(id, rowElement) {
+        if (!confirm('Are you sure you want to mark this request as complete?')) return;
+        
+        const { data, error } = await supabase
+            .from('mikvah_cards')
+            .update({ is_completed: true })
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (error) {
+            alert('Failed to update: ' + error.message);
+        } else {
+            rowElement.classList.add('completed-row');
+            requestsData.set(parseInt(id), data); // Update cache
+            rowElement.innerHTML = renderRowView(data); // Re-render with disabled buttons
+        }
+    }
+
+    function handleEdit(rowElement) {
+        const id = parseInt(rowElement.dataset.id);
+        const rowData = requestsData.get(id);
+        rowElement.innerHTML = renderRowEdit(rowData);
+    }
+    
+    async function handleSave(id, rowElement) {
+        const updatedData = {};
+        rowElement.querySelectorAll('.inline-edit-input').forEach(input => {
+            updatedData[input.dataset.field] = input.value;
+        });
+
+        const { data, error } = await supabase.from('mikvah_cards').update(updatedData).eq('id', id).select().single();
+
+        if (error) {
+            alert('Failed to save: ' + error.message);
+        } else {
+            requestsData.set(parseInt(id), data);
+            rowElement.innerHTML = renderRowView(data);
+        }
+    }
+
+    function handleCancel(id, rowElement) {
+        const originalData = requestsData.get(parseInt(id));
+        rowElement.innerHTML = renderRowView(originalData);
+    }
+
+    // --- Overlay close logic ---
+    closeOverlay.addEventListener('click', () => {
+      overlay.style.display = 'none';
+      tableBody.innerHTML = '';
+      requestsData.clear();
+    });
+  </script>
+   <script>
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav ul');
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+            });
+        }
+    </script>
+</body>
+</html>

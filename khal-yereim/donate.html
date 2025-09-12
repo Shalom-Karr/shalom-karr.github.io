@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khal Yereim - Donate</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Reset default margin and set full height for html and body */
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100% !important;
+            width: 100% !important;
+            overflow: hidden; /* Prevents unwanted scrollbars */
+        }
+
+        /* Use Flexbox on the body to control layout */
+        body {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        /* Make the header a fixed-size element */
+        .main-header {
+            flex-shrink: 0; /* Prevents the header from shrinking */
+        }
+
+        /* Allow the iframe to grow and fill the remaining space */
+        iframe {
+            flex-grow: 1 !important;
+            border: none !important; /* Removes the default iframe border */
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" class="site-title">Khal Yereim</a>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="mikvah.html" target="_blank">Mikvah</a></li>
+                <li><a href="currentschedule.html">Schedule</a></li>
+                <li><a href="/donate.html" target="_blank">Donate</a></li>
+                <li><a href="archive.html">Archive</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- The inline styles are no longer needed as they are in the <style> block above -->
+    <iframe src="https://secure.cardknox.com/khalyereim"></iframe>
+
+</body>
+</html>

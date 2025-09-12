@@ -1,0 +1,131 @@
+{
+  "name": "Cleveland Marketplace",
+  "short_name": "CleMarket",
+  "description": "Buy and sell items locally in the Cleveland area. Post listings, comment, and message users directly.",
+  "lang": "en",
+  "dir": "auto",
+  "id": "/?app=cleveland-marketplace&v=1.0.3",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "./icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": ["focus-existing", "navigate-existing", "auto"]
+  },
+  "screenshots": [
+    {
+      "src": "./screenshots/screenshot_listings_page.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Browse and search for items."
+    },
+    {
+      "src": "./screenshots/screenshot_item_detail_page.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "View item details and comments."
+    },
+    {
+      "src": "./screenshots/screenshot_messages_page.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Chat directly with users."
+    }
+  ],
+  "categories": [
+    "shopping",
+    "marketplace",
+    "lifestyle"
+  ],
+  "iarc_rating_id": "NOT_YET_RATED",
+  "prefer_related_applications": false,
+  "handle_links": "auto",
+
+  "display_override": [
+    "window-controls-overlay"
+  ],
+  "edge_side_panel": {
+    "preferred_width": 320
+  },
+  "file_handlers": [
+    {
+      "action": "/handle-shared-file",
+      "accept": {
+        "image/jpeg": [".jpg", ".jpeg"],
+        "image/png": [".png"],
+        "text/plain": [".txt"]
+      },
+      "launch_type": "single-client",
+      "icons": [
+        {
+          "src": "./icons/file-handler-icon-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+clevelandmarketplace",
+      "url": "/protocol?data=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/handle-share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "shared_files",
+          "accept": ["image/png", "image/jpeg", "image/gif"]
+        }
+      ]
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Post New Item",
+      "short_name": "Post Item",
+      "description": "Quickly post a new item for sale",
+      "url": "/index.html#action=post_item",
+      "icons": [{ "src": "./icons/shortcut-post-96x96.png", "sizes": "96x96", "type": "image/png"}]
+    },
+    {
+      "name": "My Messages",
+      "short_name": "Messages",
+      "description": "View your conversations",
+      "url": "/messages.html",
+      "icons": [{ "src": "./icons/shortcut-messages-96x96.png", "sizes": "96x96", "type": "image/png"}]
+    }
+  ]
+}

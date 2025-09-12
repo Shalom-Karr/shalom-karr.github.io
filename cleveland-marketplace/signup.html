@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Cleveland Marketplace</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta name="robots" content="noindex">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+    <header>
+        <div id="authContainer">
+            <a href="login.html" class="auth-button">Login</a>
+            <a href="signup.html" class="auth-button">Signup</a>
+        </div>
+        <div class="header-main-content">
+             <h1><a href="/" style="color: white; text-decoration: none;">Cleveland Marketplace</a></h1>
+            <h2>Create Your Account</h2>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-form-container">
+            <h2>Create Account</h2>
+            <form id="signupForm">
+                <div>
+                    <label for="signupDisplayName">Display Name:</label>
+                    <input type="text" id="signupDisplayName" name="signupDisplayName" required>
+                </div>
+                <div>
+                    <label for="signupEmail">Email:</label>
+                    <input type="email" id="signupEmail" name="signupEmail" required>
+                </div>
+                <div class="password-toggle-container">
+                    <label for="signupPassword">Password (min 6 chars):</label>
+                    <input type="password" id="signupPassword" name="signupPassword" required minlength="6">
+                    <button type="button" class="password-toggle-btn" aria-label="Show password">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-open"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-closed" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    </button>
+                </div>
+                <div>
+                    <label for="signupPhoneNumber">Phone Number:</label>
+                    <input type="tel" id="signupPhoneNumber" name="signupPhoneNumber" required>
+                </div>
+                <div class="cf-turnstile" id="signup-turnstile-widget" data-sitekey="0x4AAAAAABeY1KpLewbnc27k" style="margin: 15px auto;"></div>
+                <button type="submit" class="button-primary" style="width: 100%;">Sign Up</button>
+                <p id="signupMessage" class="form-message"></p>
+                <p class="auth-switch-link">Already have an account? <a href="login.html">Login here</a>.</p>
+            </form>
+        </div>
+    </main>
+
+    <div id="toastNotification" class="toast-notification"></div>
+
+    <footer>
+        <div class="footer-content">
+            <p>© <span id="currentYear"></span> Cleveland Marketplace. All Rights Reserved.</p>
+            <p><a href="terms.html" target="_blank">Terms of Service</a> | <a href="privacy.html" target="_blank">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    
+    <script>
+        // --- Self-Contained Script for signup.html ---
+
+        const SUPABASE_URL = 'https://zudzxwqxpmsamfsrrvpy.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp1ZHp4d3F4cG1zYW1mc3JydnB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3NjAwMTYsImV4cCI6MjA2MjMzNjAxNn0.uj7Xs_7pScIXxlhmKV_Z22_ApXV-3i3-8bNYkrnp7Fc';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let toastTimeout;
+        function showToast(message, type = 'info', duration = 3500) {
+            const toast = document.getElementById('toastNotification');
+            if (!toast) return;
+            clearTimeout(toastTimeout);
+            toast.textContent = message;
+            toast.className = 'toast-notification ' + type + ' show';
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, duration);
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+            const signupForm = document.getElementById('signupForm');
+            const signupMessage = document.getElementById('signupMessage');
+            if (!signupForm || !signupMessage) return;
+
+            signupMessage.textContent = '';
+            signupMessage.className = 'form-message';
+            
+            const email = signupForm.signupEmail.value;
+            const password = signupForm.signupPassword.value;
+            const displayName = signupForm.signupDisplayName.value.trim();
+            const phoneNumber = signupForm.signupPhoneNumber.value.trim();
+            
+            const signupOptions = { data: {} };
+            if (displayName) signupOptions.data.username = displayName;
+
+            try {
+                const { data: signUpAuthData, error } = await supabaseClient.auth.signUp({ 
+                    email, 
+                    password, 
+                    options: { data: signupOptions.data } 
+                });
+
+                if (error) throw error;
+                
+                if (signUpAuthData.user) {
+                    await supabaseClient.from('profiles').insert({
+                        id: signUpAuthData.user.id,
+                        email: signUpAuthData.user.email,
+                        username: displayName || null,
+                        phone_number: phoneNumber || null,
+                        is_2fa_enabled: true, // Defaulting 2FA to enabled on signup
+                        updated_at: new Date().toISOString()
+                    });
+                }
+
+                signupMessage.textContent = 'Success! Check your email for verification. Redirecting to login...';
+                signupMessage.className = 'form-message success';
+                showToast("Signup successful!", "success");
+
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2500);
+
+            } catch (error) {
+                console.error("Signup error:", error);
+                signupMessage.textContent = "Signup failed: " + error.message;
+                signupMessage.className = 'form-message error';
+                showToast("Signup failed: " + error.message, "error");
+            }
+        }
+        
+        function setupPasswordToggle(container) {
+            const passwordInput = container.querySelector('input[type="password"]');
+            const toggleButton = container.querySelector('.password-toggle-btn');
+            const eyeOpen = toggleButton.querySelector('.eye-open');
+            const eyeClosed = toggleButton.querySelector('.eye-closed');
+            
+            if (!passwordInput || !toggleButton) return;
+
+            toggleButton.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                eyeOpen.style.display = isPassword ? 'none' : 'block';
+                eyeClosed.style.display = isPassword ? 'block' : 'none';
+                toggleButton.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+            });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('currentYear')) {
+                document.getElementById('currentYear').textContent = new Date().getFullYear();
+            }
+
+            const signupForm = document.getElementById('signupForm');
+            if (signupForm) {
+                signupForm.addEventListener('submit', handleSignup);
+            }
+            
+            const passwordContainer = document.querySelector('.password-toggle-container');
+            if (passwordContainer) {
+                setupPasswordToggle(passwordContainer);
+            }
+        });
+    </script>
+</body>
+</html>

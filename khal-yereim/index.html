@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khal Yereim | A Shul in Cleveland Heights</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+    <div class="header-container">
+        <a href="index.html" class="site-title">
+            <img src="shul.png" alt="Khal Yereim Logo" class="nav-logo">
+            <span id="site-title-nav">Khal Yereim</span> <!-- Element to update with site title from settings -->
+        </a>
+        <nav class="main-nav">
+            <button class="nav-toggle" aria-label="Toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="mikvah.html" target="_blank">Mikvah</a></li>
+                <li><a href="currentschedule.html">Schedule</a></li>
+                <li><a href="/donate.html" target="_blank">Donate</a></li>
+                <li><a href="archive.html">Archive</a></li>
+                <li><a href="admin.html">Admin</a></li>                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+    <section id="hero" class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <p class="bsd" dir="rtl">בס"ד</p>
+            <h1 class="hebrew-title" dir="rtl">ק"ק קהל יראים</h1>
+            <h1>Khal Yereim</h1>
+            <p class="subtitle">A Local Full Service Shul in Cleveland Heights.</p>
+            <div class="hero-buttons">
+                <a href="mikvah.html" class="btn btn-primary" target="_blank">Activate your Mikvah Pass</a>
+                <a href="currentschedule.html" class="btn btn-secondary">View Schedule PDF</a>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content">
+        
+        <!-- Contact & Location Section -->
+        <section id="contact" class="content-section">
+            <div class="section-container">
+                <h2>Shul Information</h2>
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <h3>Address</h3>
+                        <address>
+                            <!-- This span will be updated by script.js if Supabase data is available -->
+                            <span id="shul-address">Loading address...</span> 
+                        </address>
+                    </div>
+                    <div class="contact-item">
+                        <!-- This h3 will be updated by script.js if Supabase data is available -->
+                        <h3 id="rabbi-name-title">HaRav Yehudah Blum</h3>
+                        <p>
+                            <!-- This link will be updated by script.js if Supabase data is available -->
+                            <a id="shul-phone" href="tel:1-216-321-5756">216-321-5756</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Subscribe Section -->
+        <section id="subscribe" class="content-section accent-bg">
+            <div class="section-container">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to receive the schedule directly in your inbox.</p>
+                
+                <!-- Netlify Form -->
+                <form name="subscribe" method="POST" data-netlify="true" class="subscribe-form">
+                    <input type="email" id="subscriber-email" name="email" placeholder="Enter your email address" required>
+                    <button type="submit" id="subscribe-button" class="btn btn-light">Subscribe</button>
+                </form>
+                <!-- Note: subscribe-message element is not in the HTML but handled in script.js -->
+            </div>
+        </section>
+
+        <!-- Donate Section -->
+        <section id="donate" class="content-section">
+            <div class="section-container">
+                <h2>Partner With Us</h2>
+                <p>Your generous contributions are vital for maintaining our shul and supporting our programs. Please consider making a donation today.</p>
+                <a href="/donate" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Donate</a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p><a href="archive.html" class="admin-link">Schedule Archive</a> | <a href="admin.html" class="admin-link">Admin Login</a></p>
+        <p>© <span id="current-year">2025</span> Khal Yereim. All rights reserved.</p>
+    </footer>
+
+    <script> // Nav toggle script
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav ul');
+        navToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('active');
+        });
+    </script>
+    <script type="module" src="script.js"></script> <!-- Make sure script.js is loaded -->
+</body>
+</html>

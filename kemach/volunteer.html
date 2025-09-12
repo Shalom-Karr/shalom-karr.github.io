@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Sign-up - Kemach Cleveland</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="volunteer-page">
+    <header class="site-header">
+        <div class="header-top">
+            <nav class="main-nav">
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        <header>
+            <h1>Kemach Succos 5786 | Volunteer Sign-up</h1>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <p>Thank you for your interest in volunteering at the Kemach Succos 5786 distribution. To ensure we have the proper amount of staffing at all times, please complete the form below.</p>
+                <p><strong>Distribution Day:</strong> Sunday, September 14, 2025</p>
+                <p><strong>Location:</strong> Hillcrest Foods, 2735 East 40th, Cleveland, Ohio 44115</p>
+            </section>
+            
+            <form id="volunteer-form" class="form-section">
+                <h2>Your Information</h2>
+                <div class="form-grid">
+                    <div class="form-group"><label for="first_name">First Name *</label><input type="text" id="first_name" name="first_name" required></div>
+                    <div class="form-group"><label for="last_name">Last Name *</label><input type="text" id="last_name" name="last_name" required></div>
+                    <div class="form-group"><label for="email">Email *</label><input type="email" id="email" name="email" required></div>
+                    <div class="form-group"><label for="cell_phone">Cell Phone Number *</label><input type="tel" id="cell_phone" name="cell_phone" required></div>
+                    <div class="form-group full-width"><label for="contact_method">Preferred Contact Method *</label><select id="contact_method" name="contact_method" required><option value="">Choose...</option><option value="Email">Email</option><option value="Text">Text</option><option value="Phone Call Only">Phone calls only</option></select></div>
+                </div>
+                
+                <h2 style="margin-top: 40px;">Availability & Roles</h2>
+                <div class="form-group"><label>I am available on Sunday, Sep 14 (check all that apply) *</label><p style="margin-top: -5px; color: #6c757d; font-size: 0.9em;">Note: Later shifts are generally understaffed.</p><div class="checkbox-group" style="flex-direction: column; align-items: flex-start;"><label><input type="checkbox" name="availability" value="First shift 12:15-3:15"> First shift 12:15-3:15</label><label><input type="checkbox" name="availability" value="Second shift 3:00-6:00"> Second shift 3:00-6:00</label><label><input type="checkbox" name="availability" value="Cleanup shift 5:45-7:45"> Cleanup shift 5:45-7:45</label><label><input type="checkbox" name="availability" value="Other"> Other</label></div></div>
+                <div class="form-group"><label>I would prefer to volunteer in the following role(s) *</label><div class="checkbox-group" style="flex-direction: column; align-items: flex-start;"><label><input type="checkbox" name="preferred_roles" value="Loading orders"> Loading orders</label><label><input type="checkbox" name="preferred_roles" value="Setup"> Setup (earlier AM)</label><label><input type="checkbox" name="preferred_roles" value="Produce"> Produce</label><label><input type="checkbox" name="preferred_roles" value="Post-Kemach"> Post-Kemach support</label></div></div>
+                <div class="form-group"><label for="previously_volunteered">Have you previously volunteered? *</label><select id="previously_volunteered" name="previously_volunteered" required><option value="">Choose...</option><option value="Yes">Yes</option><option value="No">No</option></select></div>
+                <div class="form-group"><label for="has_kemach_order">Do you have a personal Kemach order? *</label><select id="has_kemach_order" name="has_kemach_order" required><option value="">Choose...</option><option value="Yes">Yes</option><option value="No">No</option></select></div>
+                <div class="form-group"><label for="additional_volunteers">Aside from yourself, how many are joining you?</label><textarea id="additional_volunteers" name="additional_volunteers" rows="2" placeholder="Please include names and ages if possible."></textarea></div>
+                <div class="form-group"><label for="suggestions">Suggestions / Comments</label><textarea id="suggestions" name="suggestions" rows="3"></textarea></div>
+
+                <div class="form-footer" style="margin-top: 30px;">
+                    <button type="submit" id="submit-btn" class="button-primary">Sign Up to Volunteer</button>
+                    <p id="status-message" class="form-message"></p>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+    <script type="module" src="js/volunteer.js"></script>
+</body>
+</html>

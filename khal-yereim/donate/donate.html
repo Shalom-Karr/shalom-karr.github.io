@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate to Khal Yereim</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> <!-- Links to your existing stylesheet -->
+    <link rel="stylesheet" href="donate.css"> <!-- New stylesheet for donate page -->
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" class="site-title">
+                <img src="shul.jpg" alt="Khal Yereim Logo" class="nav-logo">
+                <span>Khal Yereim</span>
+            </a>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="screen.html" target="_blank">Luach</a></li>
+                    <li><a href="currentschedule.html">Schedule</a></li>
+                    <li><a href="archive.html">Archive</a></li>
+                    <li><a href="donate.html">Donate</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content content-below-header">
+        <section class="donate-section">
+            <div class="section-container">
+                <header class="section-header">
+                    <p class="bsd" dir="rtl">בס"ד</p>
+                    <h1 class="hebrew-title" dir="rtl">תרומות</h1>
+                    <h1>Support Khal Yereim</h1>
+                    <p class="subtitle">Your generosity helps us continue our vital work.</p>
+                </header>
+
+                <div class="donate-content">
+                    <div class="donate-text">
+                        <p>Khal Yereim relies on the generous support of our community to sustain our Shul, programs, and services. Every contribution, big or small, makes a significant difference.</p>
+                        <p>Your donation helps us provide daily minyanim, shiurim, educational programs for all ages, and maintain our beautiful facility for the Kavod Shamayim.</p>
+                        <p>We are deeply grateful for your partnership in serving Hashem and our community.</p>
+                    </div>
+
+                    <div class="donate-options">
+                        <h2>Ways to Donate</h2>
+
+                        <!-- Option 1: PayPal Button (Direct Link) -->
+                        <div class="donate-method">
+                            <h3>Donate via PayPal</h3>
+                            <p>Use our secure PayPal link for easy and fast donations.</p>
+                            <!-- Replace with your actual PayPal.Me link or donate button link -->
+                            <a href="https://www.paypal.com/donate/?hosted_button_id=2UR5HCBH6TR9A" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Donate with PayPal</a>
+                        </div>
+
+                        <!-- Option 2: Square Payment Form (Placeholder) -->
+                        <!-- This would ideally link to a page that initiates the Square checkout flow or use an embedded form -->
+                        <div class="donate-method">
+                            <h3>Donate via Square</h3>
+                            <p>Make a secure contribution using your credit card.</p>
+                            <!-- NOTE: Replace YOUR_SQUARE_PAYMENT_LINK_FOR_DONATION with an actual Square Payment Link -->
+                            <a href="YOUR_SQUARE_PAYMENT_LINK_FOR_DONATION" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Donate with Square</a>
+                        </div>
+
+                        <!-- Option 3: Check or Other Methods -->
+                        <div class="donate-method">
+                            <h3>Other Ways to Give</h3>
+                            <p>Please contact us for information on donating via check, wire transfer, or other methods.</p>
+                            <p><strong>Phone:</strong> <a href="tel:216-321-5756">216-321-5756</a></p>
+                            <p><strong>Email:</strong> <a href="mailto:office@khalyereim.org">office@khalyereim.org</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>© 2025 Khal Yereim. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="donate.js"></script> <!-- Links to your new JS file -->
+    <script>
+        // Re-using the nav toggle functionality directly in the script for convenience
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav ul');
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+            });
+        }
+    </script>
+</body>
+</html>

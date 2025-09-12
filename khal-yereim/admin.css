@@ -1,0 +1,282 @@
+/* --- GENERAL STYLES --- */
+:root {
+    --color-primary: #1A374D;      /* Deep Navy */
+    --color-secondary: #406882;    /* Muted Blue */
+    --color-gold: #d4af37;         /* Gold Accent */
+    --color-background: #fdfdfd;
+    --color-border: #dee2e6;
+    --color-text: #333;
+    --color-text-light: #fff;
+    --color-accent-light: #f8f9fa;
+    --font-heading: 'Merriweather', serif;
+    --font-body: 'Lato', sans-serif;
+    --color-error: #dc3545; /* Red for errors */
+    --color-success: #28a745; /* Green for success */
+    --color-info: #17a2b8; /* Blue for info */
+    --color-warning: #ffc107; /* Yellow for warning */
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: #f4f4f4;
+    color: var(--color-text);
+    line-height: 1.7;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 700px; /* Adjusted for simpler layout */
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* --- SITE HEADER --- */
+.site-header {
+    text-align: center;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+}
+.site-header h1 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    margin: 0;
+    font-size: 2.2rem;
+}
+.back-link {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    text-decoration: none;
+    color: var(--color-secondary);
+    font-weight: 700;
+}
+.back-link:hover {
+    color: var(--color-primary);
+}
+
+/* --- LOGIN VIEW --- */
+#login-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--color-background);
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 450px;
+}
+
+#login-form .form-group {
+    margin-bottom: 20px;
+}
+
+#login-form input[type="email"],
+#login-form input[type="password"] {
+    padding: 12px;
+    font-size: 1rem;
+}
+
+#login-form button {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1rem;
+}
+
+/* --- ADMIN DASHBOARD --- */
+#admin-dashboard {
+    display: none; /* Controlled by JS */
+}
+
+#admin-dashboard.hidden {
+    display: none;
+}
+
+.logout-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background-color: var(--color-error); /* Red for logout */
+    color: var(--color-text-light);
+    border: none;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.logout-btn:hover {
+    background-color: #c82333;
+}
+
+
+/* Admin Sections */
+.admin-section {
+    margin-top: 2rem;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    position: relative;
+}
+
+.admin-section.hidden { /* Should not be needed if only one section */
+    display: none;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-family: var(--font-heading);
+    color: var(--color-primary);
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+/* --- ADMIN FORM STYLES --- */
+.admin-form {
+    padding: 1rem 0;
+}
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary);
+}
+.form-group input[type="text"],
+.form-group input[type="url"],
+.form-group input[type="password"],
+.form-group input[type="email"],
+.form-group input[type="file"], /* Added for file input */
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+.form-group small {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-secondary);
+}
+
+
+/* Status Messages */
+.status-message {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-weight: bold;
+    padding: 1rem;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.6;
+    border: 1px solid transparent;
+}
+.status-success { background-color: #d4edda; color: #155724; border-color: #c3e6cb;}
+.status-error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb;}
+.status-info { background-color: #e7f3fe; color: #004085; border-color: #b8daff;}
+.status-warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba;}
+.status-message.hidden { display: none; }
+
+/* Button Styles (simplified from main style.css for admin) */
+.btn {
+    display: inline-block;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 0.8rem 1.8rem; /* Slightly smaller for admin forms */
+    border-radius: 6px; /* Less rounded for admin */
+    border: 1px solid transparent;
+    transition: all 0.2s ease-in-out;
+    margin: 0.5rem 0; /* Adjusted margin */
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: center;
+}
+.btn:disabled {
+    background-color: #ccc !important;
+    border-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border-color: var(--color-primary);
+}
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+.btn-small {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-section {
+        padding: 1.5rem;
+    }
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .section-header h2 {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem; /* Space if header stacks */
+    }
+    .logout-btn {
+        position: static;
+        margin-left: auto;
+        margin-top: 10px; /* Space from header content */
+        align-self: flex-end; /* If header becomes flex column */
+    }
+    .site-header {
+        padding-bottom: 1rem; /* Adjust if it feels too tight */
+        margin-bottom: 1.5rem;
+    }
+    .site-header h1 {
+        font-size: 1.8rem;
+    }
+    .back-link {
+       position: static;
+       display: block; /* Make it take its own line */
+       margin-bottom: 10px;
+       text-align: center; /* Center if static and block */
+    }
+    .container {
+        padding: 1.5rem;
+        margin: 1rem auto;
+    }
+}

@@ -1,0 +1,167 @@
+/* donate.css */
+
+/* Import Google Fonts if not already globally included in style.css */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap');
+
+/* General Page Structure and Header */
+body.donate-page { /* Add a class to body if you want to scope styles specifically */
+    font-family: 'Lato', sans-serif;
+    background-color: #fdfdfd; /* Consistent background */
+    color: #333;
+    margin: 0;
+    line-height: 1.7;
+}
+
+/* Ensure content is below fixed header */
+.content-below-header {
+    padding-top: 70px; /* Height of the main-header */
+}
+
+/* Main Donation Section */
+.donate-section {
+    padding: 3rem 0;
+    background-color: #fff; /* White background for content */
+}
+
+.section-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px; /* Add some horizontal padding */
+}
+
+/* Section Header Styling */
+.section-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.section-header .bsd {
+    font-size: 1.3rem;
+    color: #777;
+    margin-bottom: 0.5rem;
+}
+
+.section-header h1 {
+    font-family: 'Merriweather', serif;
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+    color: var(--color-primary); /* Using primary color from style.css */
+    margin: 0;
+}
+
+.section-header .hebrew-title {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    color: var(--color-gold); /* Using gold color from style.css */
+    margin-bottom: 0.5rem;
+}
+
+.section-header .subtitle {
+    font-size: 1.2rem;
+    color: var(--color-secondary); /* Using secondary color from style.css */
+    max-width: 600px;
+    margin: 0.5rem auto 0 auto;
+}
+
+/* Donation Content Layout */
+.donate-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns for text and options */
+    gap: 3rem;
+    margin-top: 2rem;
+    align-items: start; /* Align items to the top */
+}
+
+.donate-text p {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.donate-options h2 {
+    font-family: 'Merriweather', serif;
+    font-size: 2rem;
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 2rem;
+    display: inline-block; /* To fit border under text */
+}
+
+/* Individual Donation Method Styling */
+.donate-method {
+    background-color: #f9f9f9;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Push button to bottom if needed */
+    height: 100%; /* Ensure it takes available height */
+}
+
+.donate-method h3 {
+    font-family: 'Merriweather', serif;
+    font-size: 1.5rem;
+    color: var(--color-gold);
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+}
+
+.donate-method p {
+    font-size: 1rem;
+    color: var(--color-secondary);
+    margin-bottom: 1.5rem;
+    flex-grow: 1; /* Allows paragraph to take up available space */
+}
+
+/* Button Styling for Donate Page */
+.donate-method .btn {
+    margin-top: auto; /* Pushes the button to the bottom if the div has content */
+    width: auto; /* Let button size naturally */
+    padding: 0.9rem 2.2rem; /* Match global button sizes */
+    font-size: 1.1rem;
+}
+
+.donate-method .btn-primary {
+    background-color: var(--color-gold);
+    color: var(--color-primary);
+    border-color: var(--color-gold);
+}
+
+.donate-method .btn-primary:hover {
+    background-color: #c5a22d;
+    border-color: #c5a22d;
+}
+
+.donate-method .btn-secondary {
+    background-color: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.donate-method .btn-secondary:hover {
+    background-color: var(--color-primary);
+    color: #fff;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .donate-content {
+        grid-template-columns: 1fr; /* Stack columns on smaller screens */
+    }
+    .section-header h1 {
+        font-size: clamp(1.8rem, 6vw, 3rem);
+    }
+    .section-header .hebrew-title {
+        font-size: clamp(1.5rem, 5vw, 2.5rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .donate-section { padding: 2rem 0; }
+    .section-container { padding: 0 15px; }
+    .section-header { margin-bottom: 1.5rem; }
+    .donate-method { padding: 1.5rem; }
+    .donate-method h3 { font-size: 1.3rem; }
+    .donate-method .btn { font-size: 1rem; padding: 0.8rem 1.8rem;}
+}

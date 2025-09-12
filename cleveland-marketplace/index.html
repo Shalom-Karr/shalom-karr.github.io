@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleveland's Local Online Marketplace: Buy and Sell Items to and from your neighbors in Cleveland, OH on this Local Marketplace</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta name="description" content="Discover Cleveland's vibrant local marketplace! Buy and sell new and used items across Cleveland, OH.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TM7DBB515N"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-TM7DBB515N', { 'send_page_view': false });
+    </script>
+    <script src="https://cdn.amplitude.com/libs/analytics-browser-2.11.1-min.js.gz"></script>
+    <script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.8.0-min.js.gz"></script>
+    <script>window.amplitude.add(window.sessionReplay.plugin({sampleRate: 1}));window.amplitude.init('e8a9c934b8a60d2e1313710c586a35d3', {"autocapture":{"elementInteractions":true}});</script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "name": "CleMarket",
+          "alternateName": "Cleveland Marketplace",
+          "url": "https://clemarket.netlify.app/", 
+          "logo": "https://clemarket.netlify.app/icons/icon-192x192.png", 
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+1-216-451-6698", 
+            "contactType": "customer service"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "name": "CleMarket",
+          "url": "https://clemarket.netlify.app/", 
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://clemarket.netlify.app/?q={search_term_string}" 
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebPage",
+          "url": "https://clemarket.netlify.app/", 
+          "name": "Cleveland's Local Online Marketplace: Buy & Sell Items in Cleveland, OH",
+          "description": "Discover Cleveland's vibrant local marketplace! Buy and sell new and used items across Cleveland, OH.",
+          "inLanguage": "en-US"
+        }
+      ]
+    }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div id="authContainer">
+            <span id="userEmailDisplayHeader" class="header-email-display" style="display:none;"></span>
+            
+            <a href="login.html" id="loginBtn" class="auth-button">Login</a>
+            <a href="signup.html" id="signupBtn" class="auth-button">Signup</a>
+            
+            <a href="messages.html" id="messagesHeaderBtn" class="auth-button button-messages-icon" style="display:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="auth-icon"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>Messages</span>
+            </a>
+            
+            <button id="editProfileBtn" class="auth-button button-profile" style="display:none;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="auth-icon"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span>My Account</span>
+            </button>
+
+            <button id="logoutBtnHeader" class="auth-button button-danger" style="display:none;">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <span>Logout</span>
+            </button>
+            <a href="admin.html" id="adminViewBtn" class="auth-button button-special" style="display:none;">Admin Panel</a>
+        </div>
+        <div class="header-main-content">
+            <h1><a href="/" style="color: white; text-decoration: none;">Cleveland Marketplace</a></h1>
+            <h2>Find, buy, and sell local items in Cleveland's online marketplace.</h2>
+            <button id="postItemBtn">Post New Item</button>
+        </div>
+    </header>
+
+    <!-- Filter Sidebar -->
+    <div id="filterSidebar" class="filter-sidebar">
+        <div class="sidebar-header">
+            <h3>Filter & Sort</h3>
+            <button id="closeFilterBtn" class="close-sidebar-btn" aria-label="Close Filters">×</button>
+        </div>
+        <div class="sidebar-content">
+            <div class="filter-group">
+                <label for="sortListings">Sort by:</label>
+                <select id="sortListings">
+                    <option value="created_at_desc">Newest First</option>
+                    <option value="created_at_asc">Oldest First</option>
+                    <option value="price_asc">Price: Low to High</option>
+                    <option value="price_desc">Price: High to Low</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Price Range:</label>
+                <div id="priceRangeButtons" class="price-range-btn-grid">
+                    <button class="price-range-btn" data-min="0" data-max="">Any Price</button>
+                    <button class="price-range-btn" data-min="0" data-max="50">$0 - $50</button>
+                    <button class="price-range-btn" data-min="51" data-max="200">$51 - $200</button>
+                    <button class="price-range-btn" data-min="201" data-max="">$200+</button>
+                </div>
+            </div>
+             <div class="filter-group">
+                <label>Custom Price:</label>
+                <div class="custom-price-inputs">
+                    <input type="number" id="minPrice" placeholder="Min" min="0">
+                    <span>-</span>
+                    <input type="number" id="maxPrice" placeholder="Max" min="0">
+                </div>
+            </div>
+            <div class="filter-group free-filter-group">
+                 <input type="checkbox" id="filterFreeItems">
+                 <label for="filterFreeItems">Show only Free items</label>
+            </div>
+        </div>
+        <div class="sidebar-footer">
+            <button id="clearFiltersBtn" class="button-outline">Clear All Filters</button>
+        </div>
+    </div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+
+
+    <main>
+        <div id="mainListingsView">
+            <div class="listings-controls-wrapper">
+                <div class="listings-header-top-row">
+                    <button id="openFilterBtn" class="filter-hamburger-btn" aria-label="Open Filters">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+                    </button>
+                    <h2 id="listingsSectionTitle" class="section-title"><span class="desktop-title">Current </span>Listings</h2>
+                </div>
+                <div class="search-container-full-width">
+                    <input type="text" id="searchBar" placeholder="Search items across Cleveland...">
+                </div>
+            </div>
+
+            <div id="listingsContainer">
+                <p class="loading-text">Loading Cleveland's latest items...</p>
+            </div>
+            <div class="load-more-container">
+                <button id="loadMoreBtn" style="display: none;">Load More Listings</button>
+            </div>
+        </div>
+
+        <div id="itemDetailView" style="display: none;">
+            <!-- Content generated by script.js -->
+        </div>
+    </main>
+
+    <button id="supportChatBtn" title="Chat with Support" style="display:none;">?</button>
+
+    <!-- MODALS -->
+    <div id="postItemModal" class="modal"> <div class="modal-content"> <span class="close-button" onclick="hideModal(this.closest('.modal'))">×</span> <h2>Post Your Item</h2> <form id="postItemForm"><div><label for="post_itemName">Item Name:</label><input type="text" id="post_itemName" required></div><div><label for="post_itemDescription">Description:</label><textarea id="post_itemDescription" required></textarea></div><div class="price-section"><label for="postItemPriceField">Price:</label><div class="price-input-wrapper"><span class="dollar-sign">$</span><input type="number" id="postItemPriceField" step="0.01" min="0" placeholder="0.00" required></div><div class="free-option-container"><input type="checkbox" id="postItemFreeCheckbox"><label for="postItemFreeCheckbox" class="checkbox-label">Mark as Free</label></div></div><div><label for="post_itemImageFile">Image:</label><input type="file" id="post_itemImageFile" accept="image/*"></div><div><label for="post_itemContact">Your Preferred Contact Info:</label><input type="text" id="post_itemContact" required placeholder="Email or Phone"></div><button type="submit" class="button-primary">Post Item</button></form></div></div>
+    <div id="editProfileModal" class="modal"><div class="modal-content"><span class="close-button" onclick="hideModal(this.closest('.modal'))">×</span><h2>Edit My Profile</h2><form id="editProfileForm"><div><label for="profileUsername">Display Name:</label><input type="text" id="profileUsername"></div><div><label for="profileContactInfo">Default Contact Info:</label><input type="text" id="profileContactInfo" placeholder="e.g., your preferred email or phone"></div><div><label for="profileEmail">Account Email (cannot be changed):</label><input type="email" id="profileEmail" readonly disabled></div><button type="submit" class="button-primary">Save Changes</button></form></div></div>
+    
+    <div id="toastNotification" class="toast-notification"></div>
+
+    <footer>
+        <div class="footer-about-section">
+             <h2>Your Premier Local Hub for Buying and Selling in Cleveland</h2>
+             <p>Welcome to Cleveland Marketplace, the easiest way to connect with your community...</p>
+        </div>
+        <div class="footer-content">
+            <p>© <span id="currentYear"></span> Cleveland Marketplace. All Rights Reserved.</p>
+            <p><a href="terms.html" target="_blank">Terms of Service</a> | <a href="privacy.html" target="_blank">Privacy Policy</a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>

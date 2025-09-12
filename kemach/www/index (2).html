@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Next Item</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="picker-app">
+    <h1>Filling order USER for ULAST</h1>
+    <div class="warn">WARNN</div>
+    <form onsubmit="validateForm(event)" action="/">
+      <p class="prod-name SIDE"><b>SLOT</b><small>(Side slot)</small>NAME</p>
+      <label for="qty"><small>quantity ordered:</small><br><b id="excepted">QTY</b></label>
+      <input type="text" id="user" name="user" hidden value="USER">
+      <input type="text" id="aisle" name="aisle" hidden>
+      <input type="text" id="itm" name="itm" hidden value="ITM">
+      <small>quantity received:</small><div class="qty-box">
+        <button type="button" onclick="decrement()" ondblclick="">-</button>
+        <input type="number" id="qty" name="qty" inputmode="numeric" min="0" value="FILLED" autofocus>
+        <button type="button" onclick="increment()" ondblclick="">+</button>
+      </div>
+      <button type="submit">Next</button>
+      <label for="comment">Order Comments</label>
+      <textarea type="text" id="comment" name="comment">CMT</textarea>
+    </form>
+    <a class="back" href="javascript:goBack()">BACK</a>
+    <div class="next other-itms">
+      <p>Next Items</p>
+      NEXT_LIST
+    </div>
+    <div class="picked other-itms">
+      <p>Picked Items</p>
+      DONE_LIST
+    </div>
+  </div>
+  <script src="index.js"></script>
+</body>
+</html>

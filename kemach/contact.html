@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Kemach Cleveland</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="static-page">
+    <header class="site-header">
+        <div class="header-top">
+            <a href="index.html" class="logo">Kemach Cleveland</a>
+            <nav class="main-nav">
+                <!-- Dynamically filled by js/auth.js -->
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <header>
+            <h1>Contact Us</h1>
+        </header>
+        <main class="content-container">
+            <p class="loading-text" id="contentStatus">Loading contact information...</p>
+            <div id="pageContent">
+                <!-- Static content (Email, Address, etc.) will be loaded here -->
+            </div>
+            
+            <hr style="margin: 40px 0;">
+
+            <section class="contact-form-container">
+                <h2>Send a Message to our Team</h2>
+                <p>For questions regarding your order, please use the "<a href="messages.html">My Messages</a>" page after you log in. For general inquiries, please use the form below.</p>
+                <form id="contactForm">
+                    <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="form-group">
+                            <label for="contactName">Your Name:</label>
+                            <input type="text" id="contactName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Your Email:</label>
+                            <input type="email" id="contactEmail" name="email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="contactMessage">Message:</label>
+                        <textarea id="contactMessage" name="message" rows="6" required></textarea>
+                    </div>
+                    <button type="submit" class="button-primary">Send Message</button>
+                    <p id="formMessage" class="form-message"></p>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="js/auth.js"></script>
+    <script type="module">
+        import { supabase } from './js/supabase-client.js';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const pageContentEl = document.getElementById('pageContent');
+            const contentStatusEl = document.getElementById('contentStatus');
+
+            async function loadStaticContent() {
+                try {
+                    const { data, error } = await supabase
+                        .from('static_content')
+                        .select('content_html')
+                        .eq('page_name', 'contact')
+                        .single();
+
+                    if (error && error.code !== 'PGRST116') throw error;
+                    
+                    if (data && data.content_html) {
+                        pageContentEl.innerHTML = data.content_html;
+                        contentStatusEl.style.display = 'none';
+                    } else {
+                        contentStatusEl.textContent = "Contact information is not yet available.";
+                    }
+                } catch (err) {
+                    console.error('Error fetching static content:', err);
+                    contentStatusEl.textContent = 'Error loading contact information.';
+                }
+            }
+
+            const contactForm = document.getElementById('contactForm');
+            const formMessageEl = document.getElementById('formMessage');
+            const submitBtn = contactForm.querySelector('button[type="submit"]');
+
+            contactForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+                formMessageEl.className = 'form-message';
+                formMessageEl.style.display = 'none';
+
+                const formData = new FormData(contactForm);
+                const { data: { session } } = await supabase.auth.getSession();
+
+                const messageData = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    message: formData.get('message'),
+                    // Add user_id if logged in, otherwise it's an anonymous message
+                    user_id: session ? session.user.id : null 
+                };
+
+                // NOTE: This assumes you have a table named 'public_messages' for anonymous inquiries
+                // If not, you might want to adjust the table name or logic here.
+                const { error } = await supabase.from('public_messages').insert([messageData]);
+
+                if (error) {
+                    console.error('Error sending message:', error);
+                    formMessageEl.textContent = `Error: ${error.message}`;
+                    formMessageEl.className = 'form-message error visible';
+                } else {
+                    formMessageEl.textContent = 'Thank you! Your message has been sent successfully.';
+                    formMessageEl.className = 'form-message success visible';
+                    contactForm.reset();
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Send Message';
+            });
+
+            loadStaticContent();
+        });
+    </script>
+</body>
+</html>

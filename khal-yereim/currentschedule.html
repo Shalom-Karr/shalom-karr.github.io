@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khal Yereim - Latest Schedule PDF</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="header-container">
+            <a href="index.html" class="site-title">Khal Yereim</a>
+            <nav class="main-nav">
+                <button class="nav-toggle" aria-label="Toggle navigation">
+                    <span class="hamburger"></span>
+                </button>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="mikvah.html" target="_blank">Mikvah</a></li>
+                <li><a href="currentschedule.html">Schedule</a></li>
+                <li><a href="/donate.html" target="_blank">Donate</a></li>
+                <li><a href="archive.html">Archive</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="schedule-container content-below-header">
+        <header class="schedule-header">
+            <h1>Latest Schedule PDF</h1>
+            <p class="subtitle" id="schedule-title">Loading...</p>
+        </header>
+        <main class="schedule-main" id="schedule-display">
+            <p class="loading">Fetching latest schedule...</p>
+        </main>
+
+        <!-- Subscribe Section - Updated for Netlify -->
+        <section id="subscribe" class="content-section accent-bg">
+            <div class="section-container">
+                <h2>Stay Updated</h2>
+                <p>Subscribe to receive the schedule directly in your inbox.</p>
+                
+                <!-- The form now includes the 'data-netlify="true"' attribute -->
+                <form name="subscribe" class="subscribe-form" data-netlify="true">
+                    <input type="email" id="subscriber-email" name="email" placeholder="Enter your email address" required>
+                    <button type="submit" id="subscribe-button" class="btn btn-light">Subscribe</button>
+                </form>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <p>© <span id="current-year">2025</span> Khal Yereim. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase-client.js'; 
+
+        // --- DOM Elements ---
+        const titleEl = document.getElementById('schedule-title');
+        const displayEl = document.getElementById('schedule-display');
+        const currentYearSpan = document.getElementById('current-year');
+        if(currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+
+        const subscribeForm = document.querySelector('form[name="subscribe"]');
+        const subscriberEmailInput = document.getElementById('subscriber-email');
+        const subscribeButton = document.getElementById('subscribe-button');
+        
+        const CURRENT_SCHEDULE_DB_CATEGORY = 'CURRENT_LIVE_PDF'; 
+
+        // --- PDF Loading Functions (Unchanged) ---
+        async function forceDownload(url, filename) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Download failed: ${response.statusText}`);
+                const blob = await response.blob();
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename || 'schedule.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+            } catch (error) {
+                console.error('Download Error:', error);
+                alert(`Could not download the file: ${error.message}`);
+            }
+        }
+
+        async function loadLatestPdf() {
+            try {
+                const { data, error } = await supabase
+                    .from('schedule_data')
+                    .select('display_name, file_path, sortable_date, parsha_en, year_hebrew')
+                    .eq('category', CURRENT_SCHEDULE_DB_CATEGORY) 
+                    .order('sortable_date', { ascending: false }) 
+                    .limit(1)
+                    .single();
+
+                if (error) {
+                    if (error.code === 'PGRST116') throw new Error("No current schedule PDF has been uploaded.");
+                    throw new Error(`Database Error: ${error.message}`);
+                }
+                if (!data || !data.file_path) throw new Error("No valid schedule data found.");
+
+                titleEl.textContent = data.display_name || `Schedule for ${data.parsha_en || 'this week'}`;
+                const pdfSupabaseUrl = data.file_path;
+                const downloadFileName = `${(data.display_name || 'schedule').replace(/[^a-z0-9_.-]/gi, '_')}.pdf`;
+                const viewerUrl = `view.html?pdf=${encodeURIComponent(pdfSupabaseUrl)}`;
+                
+                displayEl.innerHTML = `
+                    <div class="pdf-container">
+                        <p>View the latest schedule below or download the file directly.</p>
+                        <div class="pdf-buttons">
+                            <a href="${viewerUrl}" class="btn btn-primary" target="_blank" rel="noopener noreferrer">View Schedule</a>
+                            <button id="downloadPdfBtn" class="btn btn-secondary">Download Schedule</button>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('downloadPdfBtn')?.addEventListener('click', () => {
+                    forceDownload(pdfSupabaseUrl, downloadFileName);
+                });
+
+            } catch (e) {
+                titleEl.textContent = "Error Loading Schedule";
+                displayEl.innerHTML = `<p class="error">Could not load the latest schedule. ${e.message}</p>`;
+            }
+        }
+
+        // --- UPDATED JAVASCRIPT FOR NETLIFY FORM SUBMISSION ---
+        if (subscribeForm) {
+            subscribeForm.addEventListener('submit', event => {
+                event.preventDefault(); // Prevent default page reload
+
+                const formData = new FormData(subscribeForm);
+                const button = subscribeForm.querySelector('button');
+                const originalButtonText = button.textContent;
+                
+                button.disabled = true;
+                button.textContent = 'Subscribing...';
+
+                fetch("/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: new URLSearchParams(formData).toString()
+                })
+                .then(() => {
+                    subscriberEmailInput.value = ''; // Clear the input on success
+                    alert("Thank you for subscribing!");
+                })
+                .catch((error) => {
+                    alert(`Submission Error: ${error}`);
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.textContent = originalButtonText;
+                });
+            });
+        }
+
+        // --- INITIALIZATION ---
+        loadLatestPdf();
+    </script>
+    <script> 
+        const navToggle = document.querySelector('.nav-toggle');
+        const mainNav = document.querySelector('.main-nav ul');
+        if (navToggle && mainNav) {
+            navToggle.addEventListener('click', () => {
+                mainNav.classList.toggle('active');
+            });
+        }
+    </script>
+</body>
+</html>

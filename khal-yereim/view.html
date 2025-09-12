@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Viewer</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="viewer-body"> 
+    <header class="viewer-header"> 
+        <h1 id="viewer-title">Schedule Viewer</h1> <!-- Added ID for dynamic title -->
+        <a href="javascript:window.close();" class="btn btn-secondary">Close Window</a>
+    </header>
+    <main class="viewer-main"> 
+        <!-- Using <embed> instead of <iframe> -->
+        <embed id="pdf-embed" type="application/pdf" style="width: 100%; height: 100%;">
+            <!-- Fallback content if <embed> or PDFs are not supported -->
+            <p>Your browser does not support embedded PDFs. Please use the download link on the previous page or try opening the PDF in a new tab.</p>
+        </embed>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const pdfUrl = params.get('pdf');
+            const pdfEmbed = document.getElementById('pdf-embed');
+            const mainContent = document.querySelector('.viewer-main');
+            const viewerTitleElement = document.getElementById('viewer-title');
+
+            // Try to extract a sensible title from the PDF URL if possible
+            let documentTitle = "Schedule Viewer";
+            if (pdfUrl) {
+                try {
+                    const urlParts = pdfUrl.split('/');
+                    const filenameWithQuery = urlParts[urlParts.length - 1];
+                    const filename = filenameWithQuery.split('?')[0]; // Remove query params
+                    if (filename.toLowerCase().endsWith('.pdf')) {
+                       // Attempt to make a more readable title, e.g., from "My_Schedule_2024.pdf" to "My Schedule 2024"
+                       let tempTitle = decodeURIComponent(filename.slice(0, -4)).replace(/_/g, ' ');
+                       // Capitalize first letter of each word
+                       documentTitle = tempTitle.replace(/\b\w/g, char => char.toUpperCase());
+                    }
+                } catch (e) { /* ignore, use default title */ }
+            }
+            if(viewerTitleElement) viewerTitleElement.textContent = documentTitle;
+            document.title = documentTitle; // Also set browser tab title
+
+
+            if (pdfUrl) {
+                pdfEmbed.src = pdfUrl;
+                console.log("PDF Viewer displaying (embed):", pdfUrl);
+            } else {
+                if(pdfEmbed) pdfEmbed.style.display = 'none'; 
+                mainContent.innerHTML = '<p class="error" style="text-align: center; padding: 2rem; color: white;">No PDF specified to view.</p>';
+                console.error("No PDF URL provided to viewer.");
+            }
+        });
+    </script>
+</body>
+</html>

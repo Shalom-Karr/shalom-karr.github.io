@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khal Yereim | Schedule Display</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000;
+    }
+    #loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background-color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      animation: fadeOut 1s ease 3s forwards;
+    }
+    .spinner {
+      border: 8px solid #333;
+      border-top: 8px solid #f7c948;
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: none;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+<div id="loader">
+  <div class="spinner"></div>
+  <div style="
+    position: absolute;
+    bottom: 80px;
+    width: 100%;
+    text-align: center;
+    color: #f7c948;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1.2rem;
+  ">
+    📘 This shul schedule is not accurate and is still being updated. Please check back soon.
+  </div>
+</div>
+
+
+  <iframe 
+    src="https://1drv.ms/p/c/dad80e4b0febc3dc/IQSXMj3pwz8BQLehoAu95F8QAUeMEavcXO_51sI3x5ELYT0?em=2&wdAr=1.7771739130434783" 
+    allowfullscreen>
+  </iframe>
+</body>
+</html>
